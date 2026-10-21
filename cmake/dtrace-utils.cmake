@@ -4,10 +4,11 @@ FUNCTION (CHECK_DTRACE d_file)
     SET(DTRACE_USES_OBJFILE "OFF" PARENT_SCOPE)
     IF ((CMAKE_SYSTEM_NAME STREQUAL "Darwin") OR (CMAKE_SYSTEM_NAME STREQUAL "Linux"))
         # USDT is not (yet) supported on platforms (e.g., FreeBSD, Solaris) that require pre-link modification of .o files
+        SET(DTRACE_TEST_HEADER "${CMAKE_CURRENT_BINARY_DIR}/.tmp.dprobes.h")
         EXECUTE_PROCESS(
-            COMMAND dtrace -o .tmp.dprobes.h -s ${d_file} -h
-            RESULT_VARIABLE DTRACE_RESULT)
-        FILE(REMOVE .tmp.dprobes.h)
+          COMMAND dtrace -o "${DTRACE_TEST_HEADER}" -s "${d_file}" -h
+          RESULT_VARIABLE DTRACE_RESULT)
+        FILE(REMOVE "${DTRACE_TEST_HEADER}")
         IF (DTRACE_RESULT EQUAL 0)
             MESSAGE(STATUS "Detecting USDT support - found")
             SET(HAVE_DTRACE "ON" PARENT_SCOPE)
